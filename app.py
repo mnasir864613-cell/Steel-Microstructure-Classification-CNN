@@ -4,7 +4,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.utils import img_to_array
 from PIL import Image
 
-model = load_model("steel_microstructure_cnn.keras")
+model = load_model("steel_microstructure_cnn (2).keras")
 
 class_names = [
     "CPJ Alloy",
