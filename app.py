@@ -1,71 +1,111 @@
 import streamlit as st
 import numpy as np
+import pandas as pd
 from tensorflow.keras.models import load_model
 from tensorflow.keras.utils import img_to_array
 from PIL import Image
-import pandas as pd
 
-# Page Config
+# =========================
+# PAGE CONFIG
+# =========================
 st.set_page_config(
     page_title="Steel Microstructure Classification",
     page_icon="🔬",
     layout="wide"
 )
 
-# Load Model
+# =========================
+# LOAD MODEL
+# =========================
 @st.cache_resource
 def load_my_model():
     return load_model("steel_microstructure_cnn (2).keras")
 
 try:
     model = load_my_model()
-    st.success("✅ Model loaded successfully")
 except Exception as e:
     st.error(f"Model Loading Error: {e}")
     st.stop()
 
-# Class Names
+# =========================
+# CLASS NAMES
+# =========================
 class_names = [
     "CPJ Alloy",
     "HR Alloy",
     "P92 Alloy"
 ]
 
-# Sidebar
-st.sidebar.title("🔬 Steel Classification")
+# =========================
+# SIDEBAR
+# =========================
+st.sidebar.title("🎓 FYP Dashboard")
 
 st.sidebar.markdown("""
-### Project Overview
+### Student
+**Nagina Bibi**
 
-This AI model classifies steel microstructure images into:
-
-- CPJ Alloy
-- HR Alloy
-- P92 Alloy
-
-### Supported Formats
-
-- JPG
-- JPEG
-- PNG
-- BMP
+### Project
+Steel Microstructure Classification
 
 ### Model
-
 CNN Deep Learning Model
+
+### Classes
+✅ CPJ Alloy
+
+✅ HR Alloy
+
+✅ P92 Alloy
+
+### Technology
+- TensorFlow
+- Keras
+- Streamlit
 """)
 
-# Main Title
-st.title("🔬 Steel Microstructure Classification Dashboard")
-
+# =========================
+# HEADER
+# =========================
 st.markdown("""
-This application uses a trained Convolutional Neural Network (CNN)
-to classify steel microstructure images.
+<div style="
+background: linear-gradient(90deg,#1f4e79,#0e7490);
+padding:25px;
+border-radius:15px;
+text-align:center;
+color:white;
+">
 
-Upload an image below and get instant predictions.
+<h1>🔬 Steel Microstructure Classification Dashboard</h1>
+
+<h3>Deep Learning Based CNN Model</h3>
+
+<p style="font-size:22px;">
+🎓 Developed & Trained By <b>Nagina Bibi</b>
+</p>
+
+</div>
+""", unsafe_allow_html=True)
+
+st.write("")
+
+# =========================
+# PROJECT OVERVIEW
+# =========================
+st.info("""
+This application uses a trained Convolutional Neural Network (CNN)
+to classify steel microstructure images into:
+
+• CPJ Alloy
+
+• HR Alloy
+
+• P92 Alloy
 """)
 
-# Upload Image
+# =========================
+# IMAGE UPLOAD
+# =========================
 uploaded_file = st.file_uploader(
     "📤 Upload Steel Microstructure Image",
     type=["jpg", "jpeg", "png", "bmp"]
@@ -75,16 +115,16 @@ if uploaded_file is not None:
 
     image = Image.open(uploaded_file)
 
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([1, 1])
 
     with col1:
+        st.subheader("📷 Uploaded Image")
         st.image(
             image,
-            caption="Uploaded Image",
             use_container_width=True
         )
 
-    # Image Preprocessing
+    # Preprocessing
     img = image.convert("RGB")
     img = img.resize((128, 128))
 
@@ -107,7 +147,7 @@ if uploaded_file is not None:
         )
 
         st.metric(
-            label="Confidence",
+            label="Confidence Score",
             value=f"{confidence:.2f}%"
         )
 
@@ -123,9 +163,8 @@ if uploaded_file is not None:
 
         st.bar_chart(prob_df)
 
-        st.subheader("📖 Class Description")
-
         descriptions = {
+
             "CPJ Alloy":
             "Complex Phase Steel Alloy used in automotive applications.",
 
@@ -136,41 +175,72 @@ if uploaded_file is not None:
             "High-temperature creep-resistant alloy used in power plants."
         }
 
+        st.subheader("📖 Alloy Description")
         st.info(descriptions[predicted_class])
 
-# Footer
+# =========================
+# MODEL PERFORMANCE
+# =========================
 st.markdown("---")
 
 st.header("📊 Model Performance")
 
-st.image(
-    "accuracy_loss.png",
-    caption="Training Accuracy & Loss Curves"
-)
+col1, col2 = st.columns(2)
 
-st.image(
-    "confusion_matrix.png",
-    caption="Confusion Matrix"
-)
+with col1:
+    st.image(
+        "accuracy_loss.png",
+        caption="Training Accuracy & Loss Curves",
+        use_container_width=True
+    )
 
-st.header("🖼 Dataset Images")
+with col2:
+    st.image(
+        "confusion_matrix.png",
+        caption="Confusion Matrix",
+        use_container_width=True
+    )
 
-st.image(
-    "sample_images.png",
-    caption="Sample Dataset Images"
-)
+# =========================
+# DATASET IMAGES
+# =========================
+st.markdown("---")
 
-st.image(
-    "augmented_images.png",
-    caption="Data Augmentation Examples"
-)
+st.header("🖼 Dataset Visualization")
 
+col1, col2 = st.columns(2)
+
+with col1:
+    st.image(
+        "sample_images.png",
+        caption="Sample Dataset Images",
+        use_container_width=True
+    )
+
+with col2:
+    st.image(
+        "augmented_images.png",
+        caption="Augmented Dataset Images",
+        use_container_width=True
+    )
+
+# =========================
+# FOOTER
+# =========================
 st.markdown("---")
 
 st.markdown("""
-### Final Year Project
+<div style="text-align:center">
 
-**Steel Microstructure Classification using Deep Learning (CNN)**
+## 🎓 Final Year Project
 
-Developed using TensorFlow & Streamlit
-""")
+### Steel Microstructure Classification Using CNN
+
+Developed & Trained By **Nagina Bibi**
+
+Department of Computer Science
+
+Powered by TensorFlow • Keras • Streamlit
+
+</div>
+""", unsafe_allow_html=True)
