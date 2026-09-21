@@ -4,33 +4,65 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.utils import img_to_array
 from PIL import Image
 
-model = load_model("steel_microstructure_cnn (2).keras")
-import streamlit as st
-from tensorflow.keras.models import load_model
+# Page settings
+st.set_page_config(
+    page_title="Steel Microstructure Classification",
+    page_icon="🔬",
+    layout="wide"
+)
 
+# Load model
 try:
     model = load_model("steel_microstructure_cnn (2).keras")
-    st.success("Model loaded successfully")
+    st.success("✅ Model loaded successfully")
 except Exception as e:
-    st.error(str(e))
+    st.error(f"Model Error: {e}")
+    st.stop()
+
+# Classes
 class_names = [
     "CPJ Alloy",
     "HR Alloy",
     "P92 Alloy"
 ]
 
-st.title("Steel Microstructure Classification")
+# Sidebar
+st.sidebar.title("🔬 Steel Classification")
+st.sidebar.info(
+    """
+    Upload a steel microstructure image.
+
+    Supported Formats:
+    - JPG
+    - JPEG
+    - PNG
+    - BMP
+    """
+)
+
+# Main title
+st.title("🔬 Steel Microstructure Classification Dashboard")
+
+st.markdown("""
+This AI model classifies steel microstructure images into:
+
+- CPJ Alloy
+- HR Alloy
+- P92 Alloy
+""")
 
 uploaded_file = st.file_uploader(
-    "Upload an image",
+    "📤 Upload Steel Microstructure Image",
     type=["jpg", "jpeg", "png", "bmp"]
 )
 
-if uploaded_file is not None:
+if uploaded_file:
 
-    image = Image.open(uploaded_file)
+    col1, col2 = st.columns(2)
 
-    st.image(image, caption="Uploaded Image")
+    with col1:
+        image = Image.open(uploaded_file)
+        st.image(image, caption="Uploaded Image", use_container_width=True)
 
     img = image.convert("RGB")
     img = img.resize((128, 128))
@@ -42,7 +74,24 @@ if uploaded_file is not None:
     prediction = model.predict(img_array)
 
     predicted_class = class_names[np.argmax(prediction)]
-    confidence = np.max(prediction) * 100
+    confidence = float(np.max(prediction) * 100)
 
-    st.success(f"Prediction: {predicted_class}")
-    st.write(f"Confidence: {confidence:.2f}%")
+    with col2:
+        st.subheader("Prediction Result")
+        st.success(predicted_class)
+
+        st.metric(
+            label="Confidence",
+            value=f"{confidence:.2f}%"
+        )
+
+        st.subheader("Class Probabilities")
+
+        for i, cls in enumerate(class_names):
+            st.progress(float(prediction[0][i]))
+            st.write(
+                f"{cls}: {prediction[0][i]*100:.2f}%"
+            )
+
+st.markdown("---")
+st.caption("Developed using TensorFlow + Streamlit")
