@@ -127,3 +127,15 @@ st.markdown(
     Developed using Streamlit & TensorFlow
     """
 )
+st.markdown("---")
+st.header("📊 Model Performance")
+
+st.image("accuracy_loss.png")
+
+st.image("confusion_matrix.png")
+
+st.header("🖼 Dataset Images")
+
+st.image("sample_images.png")
+
+st.image("augmented_images.png")
