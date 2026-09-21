@@ -5,7 +5,14 @@ from tensorflow.keras.utils import img_to_array
 from PIL import Image
 
 model = load_model("steel_microstructure_cnn (2).keras")
+import streamlit as st
+from tensorflow.keras.models import load_model
 
+try:
+    model = load_model("steel_microstructure_cnn (2).keras")
+    st.success("Model loaded successfully")
+except Exception as e:
+    st.error(str(e))
 class_names = [
     "CPJ Alloy",
     "HR Alloy",
