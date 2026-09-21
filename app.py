@@ -3,6 +3,7 @@ import numpy as np
 from tensorflow.keras.models import load_model
 from tensorflow.keras.utils import img_to_array
 from PIL import Image
+import pandas as pd
 
 # Page Config
 st.set_page_config(
@@ -32,6 +33,7 @@ class_names = [
 
 # Sidebar
 st.sidebar.title("🔬 Steel Classification")
+
 st.sidebar.markdown("""
 ### Project Overview
 
@@ -42,12 +44,14 @@ This AI model classifies steel microstructure images into:
 - P92 Alloy
 
 ### Supported Formats
+
 - JPG
 - JPEG
 - PNG
 - BMP
 
 ### Model
+
 CNN Deep Learning Model
 """)
 
@@ -74,9 +78,13 @@ if uploaded_file is not None:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.image(image, caption="Uploaded Image", use_container_width=True)
+        st.image(
+            image,
+            caption="Uploaded Image",
+            use_container_width=True
+        )
 
-    # Preprocessing
+    # Image Preprocessing
     img = image.convert("RGB")
     img = img.resize((128, 128))
 
@@ -92,16 +100,30 @@ if uploaded_file is not None:
 
     with col2:
 
-        st.subheader("Prediction Result")
+        st.subheader("🎯 Prediction Result")
 
-        st.success(f"Predicted Class: {predicted_class}")
+        st.success(
+            f"Predicted Class: {predicted_class}"
+        )
 
         st.metric(
             label="Confidence",
             value=f"{confidence:.2f}%"
         )
 
-        st.subheader("Class Description")
+        st.subheader("📈 Prediction Probabilities")
+
+        prob_df = pd.DataFrame(
+            {
+                "Probability (%)":
+                [float(x) * 100 for x in prediction[0]]
+            },
+            index=class_names
+        )
+
+        st.bar_chart(prob_df)
+
+        st.subheader("📖 Class Description")
 
         descriptions = {
             "CPJ Alloy":
@@ -118,24 +140,37 @@ if uploaded_file is not None:
 
 # Footer
 st.markdown("---")
-st.markdown(
-    """
-    **Final Year Project**
 
-    Steel Microstructure Classification using Deep Learning (CNN)
-
-    Developed using Streamlit & TensorFlow
-    """
-)
-st.markdown("---")
 st.header("📊 Model Performance")
 
-st.image("accuracy_loss.png")
+st.image(
+    "accuracy_loss.png",
+    caption="Training Accuracy & Loss Curves"
+)
 
-st.image("confusion_matrix.png")
+st.image(
+    "confusion_matrix.png",
+    caption="Confusion Matrix"
+)
 
 st.header("🖼 Dataset Images")
 
-st.image("sample_images.png")
+st.image(
+    "sample_images.png",
+    caption="Sample Dataset Images"
+)
 
-st.image("augmented_images.png")
+st.image(
+    "augmented_images.png",
+    caption="Data Augmentation Examples"
+)
+
+st.markdown("---")
+
+st.markdown("""
+### Final Year Project
+
+**Steel Microstructure Classification using Deep Learning (CNN)**
+
+Developed using TensorFlow & Streamlit
+""")
